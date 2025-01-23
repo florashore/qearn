@@ -1,0 +1,19 @@
+[tasks.build]
+command = "cargo"
+args = ["build"]
+
+[tasks.run]
+command = "cargo"
+args = ["run"]
+
+[tasks.dev]
+command = "cargo"
+args = ["watch", "-q", "-x", "run"]
+
+[tasks.lint]
+command = "cargo"
+args = ["clippy"]
+
+[tasks.db-migrate]
+command = "sqlx"
+args = ["db", "update"]
