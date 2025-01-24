@@ -94,16 +94,37 @@ pub struct TxInfoData {
     pub tx_id: String,
 }
 
-pub async fn fetch_tx_info(address: &str) -> Result<TxInfo, Error> {
-    let response: reqwest::Response = reqwest::get(format!("{}/v2/transactions/{}", RPC_URL, address)).await?;
+pub async fn fetch_tx_info(tx_id: &str) -> Result<TxInfo, Error> {
+    let response: reqwest::Response = reqwest::get(format!("{}/v2/transactions/{}", RPC_URL, tx_id)).await?;
     let result: TxInfo = response.json::<TxInfo>().await?;
     Ok(result)
 }
 
 
-pub async fn fetch_tx_history(address: &str, start_tick: i64, end_tick: i64) -> Result<TxInfo, Error> {
+#[derive(Debug, Deserialize)]
+pub struct TxHistoryResponse {
+    pub transactions: Vec<TxHistoryItem>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct TxHistoryItem {
+    #[serde(rename = "tickNumber")]
+    pub tick_number: i64,
+    pub identity: String,
+    pub transactions: Vec<TxHistoryTransaction>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct TxHistoryTransaction {
+    pub transaction: TxInfoData,
+    pub timestamp: String,
+    #[serde(rename = "moneyFlew")]
+    pub money_flew: bool,
+}
+
+pub async fn fetch_tx_history(address: &str, start_tick: i64, end_tick: i64) -> Result<TxHistoryResponse, Error> {
     let response: reqwest::Response = reqwest::get(format!("{}/v2/identities/{}/transfers?startTick={}&endTick={}", RPC_URL, address, start_tick, end_tick)).await?;
-    let result: TxInfo = response.json::<TxInfo>().await?;
+    let result: TxHistoryResponse = response.json::<TxHistoryResponse>().await?;
     Ok(result)
 }
 

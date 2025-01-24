@@ -3,3 +3,5 @@ pub const RPC_URL: &str = "https://rpc.qubic.org";
 pub const QEARN_START_EPOCH: i32 = 138;
 
 pub const QEARN_ADDRESS: &str = "JAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVKHO";
+
+pub const EPOCH_138_START_TICK: i64 = 17560000;
