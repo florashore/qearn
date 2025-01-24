@@ -1,7 +1,8 @@
 use server::{telemetry, Configuration, Db};
 use tokio::net::TcpListener;
-use server::service::rpc_service::fetch_tick_info;
-use server::db::queries::create_tick_info;
+use server::cronjob::cronjob;
+
+use tokio_cron_scheduler::{JobScheduler, Job};
 
 #[tokio::main]
 async fn main() {
@@ -26,19 +27,36 @@ async fn main() {
     tracing::debug!("Running migrations");
     db.migrate().await.expect("Failed to run migrations");
 
-     // Fetch tick info from the RPC endpoint
-     match fetch_tick_info().await {
-        Ok(tick_info) => {
-            println!("Tick info: {:?}", tick_info);
-            create_tick_info(&db.pool, tick_info.tick, tick_info.duration, tick_info.epoch, tick_info.initial_tick).await;
-        }
-        Err(err) => {
-            tracing::error!("Failed to fetch tick info: {}", err);
-            return;
-        }
-    }
+    // Create the job scheduler
+    let scheduler = JobScheduler::new()
+        .await
+        .expect("Failed to create job scheduler");
 
-    // Spin up our server.
+    // Clone the DB handle
+    let db_clone = db.clone();
+
+    // Use `Job::new_async` for async closures
+    let job = Job::new_async("1/10 * * * * *", move |_uuid, _l| {
+        let db_clone_inner = db_clone.clone();
+        // Return a boxed and pinned future
+        Box::pin(async move {
+            cronjob(&db_clone_inner)
+                .await
+                .expect("Failed to run cronjob");
+        })
+    })
+    .expect("Failed to create async job");
+
+    // Add the job to the scheduler
+    scheduler
+        .add(job)
+        .await
+        .expect("Failed to add job to the scheduler");
+
+    // Start the scheduler
+    scheduler.start().await.expect("Failed to start scheduler");
+
+    // Axum server
     tracing::info!("Starting server on {}", cfg.listen_address);
     let listener = TcpListener::bind(&cfg.listen_address)
         .await
@@ -46,5 +64,5 @@ async fn main() {
     let router = server::router(cfg, db);
     axum::serve(listener, router)
         .await
-        .expect("Failed to start server")
+        .expect("Failed to start server");
 }

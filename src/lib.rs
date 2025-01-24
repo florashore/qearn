@@ -8,6 +8,7 @@ pub mod routes;
 pub mod telemetry;
 pub mod service;
 pub mod constants;
+pub mod cronjob;
 
 pub use cfg::*;
 pub use db::*;

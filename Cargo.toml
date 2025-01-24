@@ -48,3 +48,4 @@ dotenvy = "0.15.7"
 
 anyhow = "1.0.89"
 thiserror = "1.0.64"
+tokio-cron-scheduler = "0.13.0"
