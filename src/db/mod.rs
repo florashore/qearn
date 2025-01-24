@@ -1,3 +1,6 @@
+pub mod models;
+pub mod queries;
+
 use ::anyhow::Result;
 use sqlx::{postgres::PgPoolOptions, PgPool};
 

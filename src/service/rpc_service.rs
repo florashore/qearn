@@ -1,25 +1,24 @@
 use reqwest::Error;
 use serde::Deserialize;
-use serde_json;
 
 use crate::constants::RPC_URL;
 
 #[derive(Debug, Deserialize)]
 pub struct TickInfo {
     #[serde(rename = "tickInfo")]
-    tick_info: TickInfoData,
+    pub tick_info: TickInfoData,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct TickInfoData {
     #[serde(rename = "tick")]
-    tick: u64,
+    pub tick: i64,
     #[serde(rename = "duration")]
-    duration: u64,
+    pub duration: i64,
     #[serde(rename = "epoch")]
-    epoch: u32,
+    pub epoch: i32,
     #[serde(rename = "initialTick")]
-    initial_tick: u64,
+    pub initial_tick: i64,
 }
 
 pub async fn fetch_tick_info() -> Result<TickInfoData, Error> {
