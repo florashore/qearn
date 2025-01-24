@@ -8,24 +8,6 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model User {
-    id         Int       @id @default(autoincrement())
-    name       String
-    email      String
-    created_at DateTime  @default(now())
-    projects   Project[] // Relation to the Project model
-}
-
-model Project {
-    id         Int      @id @default(autoincrement())
-    title      String
-    user_id    Int
-    created_at DateTime @default(now())
-
-    // Relation fields
-    user User @relation(fields: [user_id], references: [id])
-}
-
 model TickInfo {
     id           Int      @id @default(autoincrement())
     tick         BigInt
@@ -33,4 +15,30 @@ model TickInfo {
     epoch        Int
     initial_tick BigInt
     created_at   DateTime @default(now())
+}
+
+model TxInfo {
+    id            Int      @id @default(autoincrement())
+    source_id     String
+    dest_id       String
+    amount        BigInt
+    tick          BigInt
+    input_type    Int
+    input_size    Int
+    input_hex     String
+    signature_hex String
+    tx_id         String
+    timestamp     String
+    money_flew    Boolean
+    created_at    DateTime @default(now())
+}
+
+model Balance {
+    id         Int      @id @default(autoincrement())
+    address    String
+    balance    BigInt
+    tick       BigInt
+    created_at DateTime @default(now())
+
+    @@unique([address, tick])
 }

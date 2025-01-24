@@ -83,9 +83,9 @@ pub struct TxInfoData {
     #[serde(rename = "tickNumber")]
     pub tick_number: i64,
     #[serde(rename = "inputType")]
-    pub input_type: i64,
+    pub input_type: i32,
     #[serde(rename = "inputSize")]
-    pub input_size: i64,
+    pub input_size: i32,
     #[serde(rename = "inputHex")]
     pub input_hex: String,
     #[serde(rename = "signatureHex")]
@@ -96,6 +96,19 @@ pub struct TxInfoData {
 
 pub async fn fetch_tx_info(address: &str) -> Result<TxInfo, Error> {
     let response: reqwest::Response = reqwest::get(format!("{}/v2/transactions/{}", RPC_URL, address)).await?;
+    let result: TxInfo = response.json::<TxInfo>().await?;
+    Ok(result)
+}
+
+
+pub async fn fetch_tx_history(address: &str, start_tick: i64, end_tick: i64) -> Result<TxInfo, Error> {
+    let response: reqwest::Response = reqwest::get(format!("{}/v2/identities/{}/transfers?startTick={}&endTick={}", RPC_URL, address, start_tick, end_tick)).await?;
+    let result: TxInfo = response.json::<TxInfo>().await?;
+    Ok(result)
+}
+
+pub async fn fetch_richlist(page: i64, page_size: i64) -> Result<TxInfo, Error> {
+    let response: reqwest::Response = reqwest::get(format!("{}/v1/richlist?page={}&pageSize={}", RPC_URL, page, page_size)).await?;
     let result: TxInfo = response.json::<TxInfo>().await?;
     Ok(result)
 }
