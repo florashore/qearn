@@ -14,6 +14,3 @@ args = ["watch", "-q", "-x", "run"]
 command = "cargo"
 args = ["clippy"]
 
-[tasks.db-migrate]
-command = "sqlx"
-args = ["db", "update"]

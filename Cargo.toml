@@ -23,16 +23,6 @@ tower-http = { version = "0.6.1", features = [
     "normalize-path",
 ] }
 
-sqlx = { version = "0.8.0", features = [
-    "postgres",
-    "runtime-tokio-rustls",
-    "macros",
-    "migrate",
-    "chrono",
-    "json",
-    "uuid",
-] }
-
 tracing = "0.1.40"
 tracing-subscriber = { version = "0.3.18", features = ["json", "env-filter"] }
 
@@ -49,3 +39,5 @@ dotenvy = "0.15.7"
 anyhow = "1.0.89"
 thiserror = "1.0.64"
 tokio-cron-scheduler = "0.13.0"
+
+prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust", tag = "0.6.11" }

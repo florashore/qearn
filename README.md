@@ -105,3 +105,16 @@ pub async fn example(
     Ok(Json(resp))
 }
 ```
+
+
+### Prisma
+
+This project uses Prisma to generate the database client. To use prisma in rust, it is necessary to install the `prisma-client-rust-cli` package. But new version of prisma-client-rust-cli does not support global installation(`cargo install prisma-client-rust-cli`). So we need to install it in the project directory.
+Refer this [docs](https://prisma.brendonovich.dev/getting-started/installation) for more details.
+
+This project already added alias for `prisma` in `.cargo/config.toml`. So you can use `prisma` command to run prisma-cli.
+
+```shell
+$ cargo prisma migrate dev
+```
+

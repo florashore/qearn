@@ -20,10 +20,6 @@ pub enum ApiError {
     #[error("Invalid request: {0}")]
     InvalidRequest(String),
 
-    /// Converts from `sqlx::Error`.
-    #[error("A database error has occurred.")]
-    DatabaseError(#[from] sqlx::Error),
-
     /// Converts from any `anyhow::Error`.
     #[error("An internal server error has occurred.")]
     InternalError(#[from] anyhow::Error),
@@ -52,7 +48,6 @@ impl IntoResponse for ApiError {
                 _ => "Unknown error".to_string(),
             },
             ApiError::InvalidRequest(_) => format!("{}", self),
-            ApiError::DatabaseError(ref err) => format!("{}", err),
             ApiError::InternalError(ref err) => format!("{}", err),
         };
         error!("{}", error_to_log);
@@ -65,7 +60,7 @@ impl IntoResponse for ApiError {
         // Determine the appropriate status code.
         let status = match self {
             ApiError::InvalidJsonBody(_) | ApiError::InvalidRequest(_) => StatusCode::BAD_REQUEST,
-            ApiError::DatabaseError(_) | ApiError::InternalError(_) => {
+            ApiError::InternalError(_) => {
                 StatusCode::INTERNAL_SERVER_ERROR
             }
         };

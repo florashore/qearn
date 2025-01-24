@@ -11,16 +11,14 @@ pub mod constants;
 pub mod cronjob;
 
 pub use cfg::*;
-pub use db::*;
 
 #[derive(Clone)]
 pub struct AppState {
-    pub db: Db,
     pub cfg: Config,
 }
 
-pub fn router(cfg: Config, db: Db) -> Router {
-    let app_state = AppState { db, cfg };
+pub fn router(cfg: Config) -> Router {
+    let app_state = AppState { cfg };
 
     // Middleware that adds high level tracing to a Service.
     // Trace comes with good defaults but also supports customizing many aspects of the output:
