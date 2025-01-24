@@ -2,9 +2,9 @@ use tokio::net::TcpListener;
 use tokio_cron_scheduler::{JobScheduler, Job};
 use std::sync::Arc;
 
-use server::{telemetry, Configuration};
-use server::cronjob::cronjob;
-use server::db::prisma::PrismaClient;
+use api_server::{telemetry, Configuration};
+use api_server::cronjob::cronjob;
+use api_server::db::prisma::PrismaClient;
 
 #[tokio::main]
 async fn main() {
@@ -19,15 +19,6 @@ async fn main() {
     // This will exit with a help message if something is wrong.
     tracing::debug!("Initializing configuration");
     let cfg: Arc<Configuration> = Configuration::new();
-
-    // // Initialize db pool.
-    // tracing::debug!("Initializing db pool");
-    // let db = Db::new(&cfg.db_dsn, cfg.db_pool_max_size)
-    //     .await
-    //     .expect("Failed to initialize db");
-
-    // tracing::debug!("Running migrations");
-    // db.migrate().await.expect("Failed to run migrations");
 
     let prisma_client: Arc<PrismaClient> = Arc::new(PrismaClient::_builder().build().await.unwrap());
     // Create the job scheduler
@@ -60,7 +51,7 @@ async fn main() {
     let listener = TcpListener::bind(&cfg.listen_address)
         .await
         .expect("Failed to bind address");
-    let router = server::router(cfg);
+    let router = api_server::router(cfg);
     axum::serve(listener, router)
         .await
         .expect("Failed to start server");

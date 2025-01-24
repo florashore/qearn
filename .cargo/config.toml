@@ -1,3 +1,4 @@
 [alias]
 prisma = "run --bin prisma-cli --"
-dev = "watch -q -x run"
+dev = "watch -q -x run --bin api-server"
+serve = "run --bin api-server"
