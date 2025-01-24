@@ -1,11 +1,10 @@
-use server::{telemetry, Configuration};
 use tokio::net::TcpListener;
-use server::cronjob::cronjob;
-
 use tokio_cron_scheduler::{JobScheduler, Job};
-
-use server::db::prisma::PrismaClient;
 use std::sync::Arc;
+
+use server::{telemetry, Configuration};
+use server::cronjob::cronjob;
+use server::db::prisma::PrismaClient;
 
 #[tokio::main]
 async fn main() {
@@ -19,7 +18,7 @@ async fn main() {
     // Parse configuration from the environment.
     // This will exit with a help message if something is wrong.
     tracing::debug!("Initializing configuration");
-    let cfg = Configuration::new();
+    let cfg: Arc<Configuration> = Configuration::new();
 
     // // Initialize db pool.
     // tracing::debug!("Initializing db pool");
@@ -30,25 +29,22 @@ async fn main() {
     // tracing::debug!("Running migrations");
     // db.migrate().await.expect("Failed to run migrations");
 
-    let prisma_client = Arc::new(PrismaClient::_builder().build().await.unwrap());
-
-    #[cfg(debug_assertions)]
-    prisma_client._db_push().await.unwrap();
-
+    let prisma_client: Arc<PrismaClient> = Arc::new(PrismaClient::_builder().build().await.unwrap());
     // Create the job scheduler
-    let scheduler = JobScheduler::new()
+    let scheduler: JobScheduler = JobScheduler::new()
         .await
         .expect("Failed to create job scheduler");
 
     // Use `Job::new_async` for async closures
-    let job = Job::new_async("1/10 * * * * *", move |_uuid, _l| {
+    let job = Job::new_async("1/10 * * * * *", move |_uuid: uuid::Uuid, _l: JobScheduler| {
+        let value = prisma_client.clone();
         Box::pin(async move {
-            cronjob(&prisma_client)
-                .await
-                .expect("Failed to run cronjob");
+            let client = value.clone();
+            if let Err(e) = cronjob(&client).await {
+                eprintln!("Failed to run cronjob: {:?}", e);
+            }
         })
-    })
-    .expect("Failed to create async job");
+    }).expect("Failed to create async job");
 
     // Add the job to the scheduler
     scheduler
