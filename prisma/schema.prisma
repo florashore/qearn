@@ -31,6 +31,9 @@ model TxInfo {
     timestamp     String
     money_flew    Boolean
     created_at    DateTime @default(now())
+
+    @@unique([tx_id])
+    @@index([source_id, tick])
 }
 
 model Balance {

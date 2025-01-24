@@ -86,7 +86,7 @@ pub async fn upsert_balance(
         .balance()
         .upsert(
             prisma::balance::address_tick(address.to_string(), tick),
-            prisma::balance::create(address.to_string(), tick, balance, vec![]),
+            prisma::balance::create(address.to_string(), balance, tick, vec![]),
             vec![prisma::balance::balance::set(balance)],
         )
         .exec()
