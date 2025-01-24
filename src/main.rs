@@ -1,14 +1,11 @@
-use server::{telemetry, Configuration, Db};
+use server::{telemetry, Configuration};
 use tokio::net::TcpListener;
 use server::cronjob::cronjob;
 
 use tokio_cron_scheduler::{JobScheduler, Job};
 
-#[allow(warnings, unused)]
-mod prisma;
-
-use prisma::PrismaClient;
-use prisma_client_rust::NewClientError;
+use server::db::prisma::PrismaClient;
+use std::sync::Arc;
 
 #[tokio::main]
 async fn main() {

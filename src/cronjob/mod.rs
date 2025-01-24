@@ -1,7 +1,6 @@
 use crate::service::rpc_service::fetch_tick_info;
 use crate::db::queries::create_tick_info;
-use crate::db::models::TickInfo;
-use prisma_client_rust::PrismaClient;
+use crate::db::prisma::PrismaClient;
 use std::error::Error;
 
 pub async fn cronjob(client: &PrismaClient) -> Result<(), Box<dyn Error>> {
