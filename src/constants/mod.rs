@@ -1,0 +1,1 @@
+pub const RPC_URL: &str = "https://rpc.qubic.org";

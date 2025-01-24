@@ -1,5 +1,6 @@
 use server::{telemetry, Configuration, Db};
 use tokio::net::TcpListener;
+use server::service::rpc_service::fetch_tick_info;
 
 #[tokio::main]
 async fn main() {
@@ -14,6 +15,17 @@ async fn main() {
     // This will exit with a help message if something is wrong.
     tracing::debug!("Initializing configuration");
     let cfg = Configuration::new();
+
+     // Fetch tick info from the RPC endpoint
+     match fetch_tick_info().await {
+        Ok(tick_info) => {
+            println!("Tick info: {:?}", tick_info);
+        }
+        Err(err) => {
+            tracing::error!("Failed to fetch tick info: {}", err);
+            return;
+        }
+    }
 
     // Initialize db pool.
     tracing::debug!("Initializing db pool");
