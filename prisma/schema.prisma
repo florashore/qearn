@@ -1,6 +1,6 @@
 generator client {
-    provider = "cargo prisma"
-    output   = "../src/prisma.rs"
+    provider = "prisma-cli"
+    output   = "../src/db/prisma.rs"
 }
 
 datasource db {
@@ -9,28 +9,28 @@ datasource db {
 }
 
 model User {
-    id        Int       @id @default(autoincrement())
-    name      String
-    email     String
-    createdAt DateTime  @default(now())
-    projects  Project[] // Relation to the Project model
+    id         Int       @id @default(autoincrement())
+    name       String
+    email      String
+    created_at DateTime  @default(now())
+    projects   Project[] // Relation to the Project model
 }
 
 model Project {
-    id        Int      @id @default(autoincrement())
-    title     String
-    userId    Int
-    createdAt DateTime @default(now())
+    id         Int      @id @default(autoincrement())
+    title      String
+    user_id    Int
+    created_at DateTime @default(now())
 
     // Relation fields
-    user User @relation(fields: [userId], references: [id])
+    user User @relation(fields: [user_id], references: [id])
 }
 
 model TickInfo {
-    id          Int      @id @default(autoincrement())
-    tick        BigInt
-    duration    BigInt
-    epoch       Int
-    initialTick BigInt
-    createdAt   DateTime @default(now())
+    id           Int      @id @default(autoincrement())
+    tick         BigInt
+    duration     BigInt
+    epoch        Int
+    initial_tick BigInt
+    created_at   DateTime @default(now())
 }
