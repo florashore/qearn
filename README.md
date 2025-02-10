@@ -1,6 +1,6 @@
 # Qearn API
 
-This is the API for the Qearn Dapp application. It is built using [Axum](https://github.com/tokio-rs/axum) and [PostgreSQL](https://www.postgresql.org/).
+This is the API for the Qearn Dapp and transaction indexer of Qearn Smart Contract. It is built using [Axum](https://github.com/tokio-rs/axum), [PostgreSQL](https://www.postgresql.org/), [Prisma Rust](https://github.com/Brendonovich/prisma-client-rust).
 
 ## Getting Started
 

@@ -61,11 +61,8 @@ pub async fn cronjob(client: &PrismaClient) -> Result<(), Box<dyn Error>> {
             // 5. Process each transaction
             for tx_item in tx_history.transactions {
                 for tx in tx_item.transactions {
-                    // Get current timestamp
-                    let timestamp = chrono::Utc::now().to_rfc3339();
-
                     // Create transaction record
-                    create_tx_info(&client, &tx.transaction, &timestamp, tx.money_flew).await?;
+                    create_tx_info(&client, &tx.transaction, &tx.timestamp, tx.money_flew).await?;
 
                     // Update balances if money actually transferred
                     if tx.money_flew {
@@ -124,31 +121,6 @@ pub async fn cronjob(client: &PrismaClient) -> Result<(), Box<dyn Error>> {
             // Update start_tick to end_tick for the next iteration
             start_tick = end_tick;
         } else {
-            // If no transactions found, fetch the next 20 ticks
-            tracing::info!(
-                "No transactions found between ticks {} and {}. Fetching next 20 ticks.",
-                start_tick + 1,
-                end_tick
-            );
-
-            // Get current balance
-            let current_balance = client
-                .balance()
-                .find_first(vec![
-                    prisma::balance::address::equals(QEARN_ADDRESS.to_string()),
-                    prisma::balance::tick::lte(end_tick),
-                ])
-                .order_by(prisma::balance::tick::order(
-                    prisma_client_rust::Direction::Desc,
-                ))
-                .exec()
-                .await?
-                .map(|b| b.balance)
-                .unwrap_or(0);
-
-            // Update balance with same amount to mark tick as processed
-            upsert_balance(&client, QEARN_ADDRESS, end_tick, current_balance).await?;
-
             // Move to the next tick window
             start_tick = end_tick;
         }
